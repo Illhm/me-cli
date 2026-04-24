@@ -1,4 +1,4 @@
-from app.client.engsel import get_families
+from app.client.engsel import get_families, get_family
 from app.menus.util import clear_screen, pause
 from app.service.auth import AuthInstance
 import time
@@ -63,13 +63,38 @@ def run_crawler_menu(is_enterprise: bool = False):
                     print(f"  -> Ditemukan {len(families)} package families!")
                     for f in families:
                         # Filter duplicates based on family code
-                        existing = [x for x in found_families if x["code"] == f.get("package_family_code")]
+                        family_code = f.get("package_family_code")
+                        existing = [x for x in found_families if x["code"] == family_code]
                         if not existing:
+                            print(f"    -> Mendalami: {f.get('name', 'Unknown')}")
+
+                            # Deep fetch
+                            deep_data = get_family(
+                                api_key,
+                                tokens,
+                                family_code,
+                                is_enterprise,
+                                migration_type="NONE"
+                            )
+
+                            options_list = []
+                            if deep_data and "package_variants" in deep_data:
+                                for variant in deep_data["package_variants"]:
+                                    for opt in variant.get("package_options", []):
+                                        options_list.append({
+                                            "option_name": opt.get("name"),
+                                            "option_code": opt.get("package_option_code"),
+                                            "price": opt.get("price"),
+                                            "variant_name": variant.get("name")
+                                        })
+
                             found_families.append({
-                                "code": f.get("package_family_code"),
+                                "code": family_code,
                                 "name": f.get("name", "Unknown Name"),
-                                "category": cat
+                                "category": cat,
+                                "options": options_list
                             })
+                            time.sleep(1) # delay after deep fetch
                 else:
                     print("  -> Kosong.")
             else:
