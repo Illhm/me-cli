@@ -25,6 +25,7 @@ from app.menus.notification import show_notification_menu
 from app.menus.store.segments import show_store_segments_menu
 from app.menus.store.search import show_family_list_menu, show_store_packages_menu
 from app.menus.store.redemables import show_redeemables_menu
+from app.menus.store.crawler import run_crawler_menu
 from app.client.registration import dukcapil
 from app.menus.sharing import show_balance_allotment_menu
 
@@ -53,6 +54,7 @@ def show_main_menu(profile):
     print("12. Store Family List")
     print("13. Store Packages")
     print("14. Redemables")
+    print("15. 🤖 Crawler Family Code")
     print("BA. Balance Allotment (Transfer Pulsa)")
     print("R. Register")
     print("N. Notifikasi")
@@ -174,6 +176,10 @@ def main():
                 is_enterprise = input_14_1 == 'y'
                 
                 show_redeemables_menu(is_enterprise)
+            elif choice == "15":
+                input_15_1 = input("Is enterprise mode (dapat menemukan harga khusus)? (y/n): ").lower()
+                is_enterprise = input_15_1 == 'y'
+                run_crawler_menu(is_enterprise)
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
